@@ -38,29 +38,28 @@
 
 	async function prepareDownload() {
 		if (!tabs && !bookmarks && !extensions) {
-			alert.openAlert('suca coglione')
+			alert.openAlert('Impossible to create a backup file of nothing!')
 			return
 		}
 
 		const data = JSON.stringify(await create())
+		// const data = '{"extensions": [{"id": "test", name: "test data"}]}'
 
 		if (useEncryption) {
-			console.log(passphraseInputValue)
-
 			if (!passphraseInputValue) {
-				alert.openAlert('suca coglione')
+				alert.openAlert('Cannot use an empty string as passphrase!')
 				return
 			}
 
 			const encData: Uint8Array = await encrypt(data, passphraseInputValue)
-			await download(encData.toString())
+			await download(encData)
 		} else {
 			// console.log(data)
 			await download(data)
 		}
 	}
 
-	async function download(data: string) {
+	async function download(data: any) {
 		const blob = new Blob([data], { type: 'application/bsbak' })
 
 		const d = new Date()
@@ -89,7 +88,7 @@
 
 <Alert bind:this={alert} />
 
-<h3>What do you want to backup?</h3>
+<h4>What do you want to backup?</h4>
 
 <div id="items">
 	<label>
