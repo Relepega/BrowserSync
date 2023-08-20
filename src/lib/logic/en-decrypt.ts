@@ -5,7 +5,7 @@ export async function encrypt(data: string, key: string): Promise<Uint8Array> {
 	return bf.encode(data)
 }
 
-export async function decrypt(data: Uint8Array, key: string) {
+export async function decrypt(data: Uint8Array, key: string): Promise<string> {
 	const bf = new Blowfish(key, Blowfish.MODE.ECB, Blowfish.PADDING.NULL)
-	return bf.decode(data)
+	return bf.decode(data).toString()
 }

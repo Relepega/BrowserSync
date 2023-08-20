@@ -1,16 +1,30 @@
 <script lang="ts">
-	async function fetchFileContent(file: File): Promise<string | ArrayBuffer | null> {
+	import type { FullBackup } from '$lib/types/types'
+	import { decrypt } from '$lib/logic/en-decrypt'
+
+	let isEncrypted: boolean = false
+
+	async function fetchFileContent(file: File): Promise<ArrayBuffer> {
 		return new Promise((resolve, reject) => {
 			const reader = new FileReader()
+
 			reader.onload = function (e) {
 				// @ts-ignore
 				const contents = e.target.result
+
+				if (!contents) {
+					reject('Empty file')
+				}
+
+				// @ts-ignore
 				resolve(contents)
 			}
+
 			reader.onerror = function (e) {
 				reject(e)
 			}
-			reader.readAsText(file)
+
+			reader.readAsArrayBuffer(file)
 		})
 	}
 
@@ -24,9 +38,26 @@
 			return
 		}
 
-		let fileContent: string | ArrayBuffer | null = await fetchFileContent(file)
+		const fileContent: ArrayBuffer = await fetchFileContent(file)
 
-		console.log(`printing content of "${file.name}":\n`, fileContent)
+		let backupData: FullBackup = {}
+
+		try {
+			const decoder = new TextDecoder()
+			backupData = JSON.parse(decoder.decode(fileContent))
+		} catch (error) {
+			isEncrypted = true
+		}
+
+		if (isEncrypted) {
+			try {
+				backupData = JSON.parse(await decrypt(new Uint8Array(fileContent), 'asdf'))
+			} catch (error) {
+				console.error(error)
+			}
+		}
+
+		console.log(backupData)
 	}
 </script>
 

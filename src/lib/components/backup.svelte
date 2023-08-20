@@ -52,14 +52,15 @@
 			}
 
 			const encData: Uint8Array = await encrypt(data, passphraseInputValue)
-			await download(encData)
+			await download(encData.buffer)
 		} else {
 			// console.log(data)
-			await download(data)
+			const encoder = new TextEncoder()
+			await download(encoder.encode(data))
 		}
 	}
 
-	async function download(data: any) {
+	async function download(data: ArrayBuffer) {
 		const blob = new Blob([data], { type: 'application/bsbak' })
 
 		const d = new Date()
