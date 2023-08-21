@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /// <reference types="chrome" />
 
-import type { FullBackup, Bookmark, OpenTab, TabGroup, BrowserExtension } from '$lib/types/types'
+import type { Bookmark, OpenTab, TabGroup, BrowserExtension } from '$lib/types/types'
 
 function traverseBookmarkNode(node: chrome.bookmarks.BookmarkTreeNode): Bookmark {
 	const bookmark: Bookmark = {
@@ -51,7 +51,7 @@ export async function getOpenTabs(): Promise<OpenTab[]> {
 			index: tab.index,
 			pinned: tab.pinned,
 			groupId: tab.groupId,
-			url: tab.status == 'complete' ? tab.url : tab.pendingUrl
+			url: tab.url ? tab.url : tab.pendingUrl
 		})
 	}
 
@@ -61,10 +61,10 @@ export async function getOpenTabs(): Promise<OpenTab[]> {
 export async function getTabGroups(): Promise<TabGroup[]> {
 	const tgs: TabGroup[] = []
 
-	const chromeTgs = await chrome.tabGroups.query({})
+	const TabGroups = await chrome.tabGroups.query({})
 
-	for (let i = 0; i < chromeTgs.length; i++) {
-		const group = chromeTgs[i]
+	for (let i = 0; i < TabGroups.length; i++) {
+		const group = TabGroups[i]
 
 		tgs.push({
 			collapsed: group.collapsed,

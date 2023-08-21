@@ -21,6 +21,7 @@ async function createTabs(data: FullBackup, restoreStatusNode: HTMLElement) {
 
 		const newlyCreatedTab: chrome.tabs.Tab = await chrome.tabs.create({
 			index: tab.index,
+			// avoid the extension closing action caused by setting tab as active
 			active: false,
 			pinned: tab.pinned,
 			url: tab.url
