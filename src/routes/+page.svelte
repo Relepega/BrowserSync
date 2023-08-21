@@ -1,28 +1,40 @@
 <script lang="ts">
-	import Backup from '$lib/components/backup.svelte'
-	import Restore from '$lib/components/restore.svelte'
+	import Backup from '$lib/tabs/backup.svelte'
+	import Restore from '$lib/tabs/restore.svelte'
 
-	let mode: string = 'backup'
+	let mode: string = 'restore'
+
+	function setMode(m: string) {
+		mode = m
+	}
 </script>
 
 <h1>BrowserSync Reloaded</h1>
 
-<div class="tab-name">
-	<div>
-		<input type="radio" name="mode" value="backup" id="mode-backup" bind:group={mode} />
-		<label for="mode-backup">Backup</label>
+<div class="container">
+	<div class="tab-name">
+		<div
+			on:click={() => {
+				mode = 'backup'
+			}}
+		>
+			Backup
+		</div>
+		<div
+			on:click={() => {
+				mode = 'restore'
+			}}
+		>
+			Restore
+		</div>
 	</div>
-	<div>
-		<input type="radio" name="mode" value="restore" id="mode-restore" bind:group={mode} />
-		<label for="mode-restore">Restore</label>
+	<div class="tab-content">
+		{#if mode == 'backup'}
+			<Backup />
+		{:else}
+			<Restore />
+		{/if}
 	</div>
-</div>
-<div class="tab-content">
-	{#if mode == 'backup'}
-		<Backup />
-	{:else}
-		<Restore />
-	{/if}
 </div>
 
 <style lang="scss">
@@ -32,30 +44,23 @@
 		text-align: center;
 	}
 
+	.container {
+		display: flex;
+		flex-direction: column;
+	}
+
 	.tab-name {
 		display: flex;
+		flex-grow: 1;
 
 		div {
 			border: 1px solid grey;
-			width: 50%;
+			flex-grow: 1;
 			height: $tab-name-height;
 
 			display: flex;
 			justify-content: center;
 			align-items: center;
-
-			input[type='radio'],
-			&:checked {
-				padding: 0;
-				margin: 0;
-				position: fixed;
-				opacity: 0;
-				pointer-events: none;
-				visibility: hidden;
-
-				width: 25%;
-				height: $tab-name-height;
-			}
 		}
 	}
 

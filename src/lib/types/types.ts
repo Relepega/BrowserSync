@@ -23,7 +23,7 @@ export type OpenTab = {
 
 export type TabGroup = {
 	collapsed: boolean
-	color: string
+	color: 'grey' | 'blue' | 'red' | 'yellow' | 'green' | 'pink' | 'purple' | 'cyan' | 'orange'
 	id: number
 	title?: string
 }
