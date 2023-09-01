@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /// <reference types="chrome" />
 
-import type { Bookmark, OpenTab, TabGroup, BrowserExtension } from '$lib/types/types'
+import type { Bookmark, OpenTab, TabGroup, BrowserExtension } from '$lib/types'
 
 function traverseBookmarkNode(node: chrome.bookmarks.BookmarkTreeNode): Bookmark {
 	const bookmark: Bookmark = {
@@ -84,11 +84,11 @@ export async function getExtensions(): Promise<BrowserExtension[]> {
 	for (let i = 0; i < installedApps.length; i++) {
 		const app = installedApps[i]
 
-		if (app.type == 'extension' && app.installType == 'normal') {
+		if (app.type == 'extension') {
 			extensions.push({
 				id: app.id,
 				name: app.shortName,
-				storeUrl: `chrome.google.com/webstore/detail/${app.id}`
+				storeUrl: app.installType == 'normal' ? `https://chrome.google.com/webstore/detail/${app.id}` : `https://www.google.com/search?&q=${app.name} browser extension`
 			})
 		}
 	}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { FullBackup } from '$lib/types/types'
+	import type { FullBackup, RestoreOptions } from '$lib/types'
 
 	import { decrypt } from '$lib/logic/en-decrypt'
 	import { restore } from '$lib/logic/restore'
@@ -100,9 +100,7 @@
 		}
 
 		try {
-			backupData = JSON.parse(
-				await decrypt(new Uint8Array(fileContent), passphraseInputValue)
-			)
+			backupData = JSON.parse(await decrypt(new Uint8Array(fileContent), passphraseInputValue))
 			setRestoreDefaults()
 			backupLoadingLogger.message = 'Backup content decrypted successfully!'
 			canRestore = true
@@ -118,26 +116,26 @@
 			}
 		}
 	}
+
+	function preRestore() {
+		const options: RestoreOptions = {
+			tabs,
+			bookmarks,
+			extensions
+		}
+
+		restore(backupData, options, restoreStatusNode)
+	}
 </script>
 
 <div id="file-choser">
 	<h4>Choose a backup file</h4>
-	<input
-		type="file"
-		name="backup-file"
-		id="backup-file"
-		accept=".bsbak"
-		on:change={handleFileChange}
-	/>
+	<input type="file" name="backup-file" id="backup-file" accept=".bsbak" on:change={handleFileChange} />
 </div>
 
 {#if isEncrypted}
 	<hr />
-	<PassphraseInput
-		msg="Enter the decryption key:"
-		bind:passphraseInput
-		bind:passphraseInputValue
-	/>
+	<PassphraseInput msg="Enter the decryption key:" bind:passphraseInput bind:passphraseInputValue />
 	<button on:click={() => decryptData()}>Decrypt</button>
 {/if}
 
@@ -165,12 +163,7 @@
 		{/if}
 		{#if backupData.extensions}
 			<label>
-				<input
-					type="checkbox"
-					name="items"
-					id="item-extensions"
-					bind:checked={extensions}
-				/>
+				<input type="checkbox" name="items" id="item-extensions" bind:checked={extensions} />
 				Extensions
 			</label>
 		{/if}
@@ -178,7 +171,7 @@
 	<p>PLEASE DO NOT CLOSE THE EXTENSION OR ELSE THE RESTORING PROCESS WILL STOP!</p>
 	<button
 		on:click={() => {
-			restore(backupData, restoreStatusNode)
+			preRestore()
 		}}>Restore</button
 	>
 	<p bind:this={restoreStatusNode}>The status about restoring your data will be shown here...</p>
